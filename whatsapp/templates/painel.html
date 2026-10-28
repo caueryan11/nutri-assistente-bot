@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block cabeca %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>{% endblock %}
+{% block conteudo %}
+  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-semibold">Painel de {{ nutri }}</h1>
+      <p class="text-sm text-slate-500">Últimos {{ m.dias }} dias · atualizado {{ agora }}</p>
+    </div>
+    <nav class="inline-flex rounded-lg bg-white border border-slate-200 p-1 text-sm self-start">
+      {% for d in [7, 30] %}
+      <a href="?dias={{ d }}" class="px-3 py-1.5 rounded-md {{ 'bg-emerald-600 text-white' if d == m.dias else 'text-slate-600 hover:bg-slate-100' }}">{{ d }} dias</a>
+      {% endfor %}
+    </nav>
+  </div>
+
+  <!-- Números principais -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <p class="text-xs text-slate-500">Dúvidas resolvidas</p>
+      <p class="text-3xl font-semibold mt-1">{{ m.duvidas_respondidas }}</p>
+      <p class="text-xs text-slate-500 mt-1">{{ m.duvidas_fora_horario }} fora do horário comercial</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <p class="text-xs text-slate-500">Consultas marcadas pelo assistente</p>
+      <p class="text-3xl font-semibold mt-1">{{ m.consultas_agendadas }}</p>
+      <p class="text-xs text-slate-500 mt-1">{{ m.primeiras_consultas }} primeiras · {{ m.retornos_agendados }} retornos</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <p class="text-xs text-slate-500">Retornos resgatados</p>
+      <p class="text-3xl font-semibold mt-1">{{ m.retornos_recuperados }}</p>
+      <p class="text-xs text-slate-500 mt-1">pacientes 35+ dias sem consulta</p>
+    </div>
+    <div class="bg-emerald-600 text-white rounded-xl p-4">
+      <p class="text-xs text-emerald-100">Receita estimada</p>
+      {% if m.receita_estimada is none %}
+      <p class="text-lg font-semibold mt-1">—</p>
+      <p class="text-xs text-emerald-100 mt-1">cadastre o valor da consulta</p>
+      {% else %}
+      <p class="text-xl sm:text-3xl font-semibold mt-1 whitespace-nowrap">R$ {{ reais(m.receita_estimada) }}</p>
+      <p class="text-xs text-emerald-100 mt-1">{{ m.consultas_agendadas }} × R$ {{ reais(m.valor_consulta) }}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Gráficos -->
+  <section class="grid md:grid-cols-3 gap-3 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <h2 class="font-medium">Dúvidas: resolvidas × encaminhadas</h2>
+      {% if m.duvidas_respondidas + m.duvidas_encaminhadas %}
+      <div class="relative h-56 mt-3"><canvas id="g-duvidas" aria-label="Gráfico de dúvidas resolvidas e encaminhadas"></canvas></div>
+      {% else %}<p class="text-sm text-slate-500 mt-6">Nenhuma mensagem de paciente no período.</p>{% endif %}
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <h2 class="font-medium">Consultas agendadas × retornos resgatados</h2>
+      <div class="relative h-56 mt-3"><canvas id="g-consultas" aria-label="Gráfico de consultas agendadas e retornos resgatados"></canvas></div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4 flex flex-col">
+      <h2 class="font-medium">Novos contatos que marcaram consulta</h2>
+      {% if m.taxa_conversao is none %}
+      <p class="text-sm text-slate-500 mt-6">Nenhum novo contato no período.</p>
+      {% else %}
+      <p class="text-5xl font-semibold text-emerald-700 mt-6">{{ ('%.0f' % m.taxa_conversao) }}%</p>
+      <p class="text-sm text-slate-500 mt-2">{{ m.leads_convertidos }} de {{ m.novos_leads }} novos interessados já marcaram a primeira consulta</p>
+      <div class="w-full bg-slate-100 rounded-full h-2 mt-4"><div class="bg-emerald-600 h-2 rounded-full" style="width: {{ [m.taxa_conversao, 100]|min }}%"></div></div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Tabelas -->
+  <section class="grid md:grid-cols-2 gap-3">
+    <div class="bg-white rounded-xl border border-slate-200 p-4 overflow-x-auto">
+      <h2 class="font-medium mb-3">Últimas mensagens encaminhadas para você</h2>
+      {% if m.ultimas_encaminhadas %}
+      <table class="w-full text-sm">
+        <thead class="text-left text-slate-500"><tr><th class="py-1 pr-3 font-normal">Quando</th><th class="py-1 pr-3 font-normal">Paciente</th><th class="py-1 font-normal">Motivo</th></tr></thead>
+        <tbody class="divide-y divide-slate-100">
+        {% for e in m.ultimas_encaminhadas %}
+          <tr><td class="py-2 pr-3 whitespace-nowrap">{{ data(e.quando) }}</td><td class="py-2 pr-3">{{ e.paciente }}</td><td class="py-2 text-slate-600">{{ e.motivo or '—' }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="text-sm text-slate-500">Nada encaminhado no período.</p>{% endif %}
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4 overflow-x-auto">
+      <h2 class="font-medium mb-3">Últimas consultas marcadas pelo assistente</h2>
+      {% if m.ultimas_consultas %}
+      <table class="w-full text-sm">
+        <thead class="text-left text-slate-500"><tr><th class="py-1 pr-3 font-normal">Consulta</th><th class="py-1 pr-3 font-normal">Paciente</th><th class="py-1 font-normal">Tipo</th></tr></thead>
+        <tbody class="divide-y divide-slate-100">
+        {% for c in m.ultimas_consultas %}
+          <tr><td class="py-2 pr-3 whitespace-nowrap">{{ data(c.quando) }}</td><td class="py-2 pr-3">{{ c.paciente }}</td><td class="py-2">{{ 'Primeira consulta' if c.tipo == 'primeira' else 'Retorno' }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="text-sm text-slate-500">Nenhuma consulta marcada no período.</p>{% endif %}
+    </div>
+  </section>
+
+  <footer class="text-xs text-slate-400 mt-8 space-y-1">
+    <p>Receita estimada = consultas marcadas pelo assistente × valor da consulta. Retorno resgatado = retorno marcado até 30 dias depois da mensagem automática de retorno.</p>
+  </footer>
+{% endblock %}
+{% block scripts %}
+<script>
+  const dados = {{ grafico|tojson }};
+  const verde = "#059669", ambar = "#f59e0b", azul = "#0284c7";
+  const el = (id) => document.getElementById(id);
+  if (el("g-duvidas")) new Chart(el("g-duvidas"), {
+    type: "doughnut",
+    data: { labels: ["Resolvidas pelo assistente", "Encaminhadas"], datasets: [{ data: dados.duvidas, backgroundColor: [verde, ambar] }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } }
+  });
+  new Chart(el("g-consultas"), {
+    type: "bar",
+    data: { labels: ["Primeiras", "Retornos", "Resgatados"],
+            datasets: [{ data: dados.consultas, backgroundColor: [verde, azul, ambar], borderRadius: 6 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false } },
+               scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>{% block titulo %}Painel do Consultório{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  {% block cabeca %}{% endblock %}
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+<main class="max-w-5xl mx-auto px-4 py-6 sm:py-10">
+  <header class="mb-6">
+    <p class="text-sm text-emerald-700 font-medium">Nutri Assistente · {{ nutri }}</p>
+    {% if base %}
+    <nav class="mt-3 flex gap-1 border-b border-slate-200 text-sm overflow-x-auto">
+      {% for chave, rotulo, caminho in [("geral", "Visão geral", ""), ("pacientes", "Pacientes", "/pacientes"), ("reativacao", "Reativação", "/reativacao"), ("consultorio", "Consultório", "/consultorio")] %}
+      <a href="{{ base }}{{ caminho }}" class="px-3 py-2 -mb-px border-b-2 whitespace-nowrap {{ 'border-emerald-600 text-emerald-700 font-medium' if aba == chave else 'border-transparent text-slate-500 hover:text-slate-800' }}">{{ rotulo }}</a>
+      {% endfor %}
+    </nav>
+    {% endif %}
+  </header>
+
+  {% if aviso %}
+  <div role="status" class="mb-5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 text-sm">{{ aviso }}</div>
+  {% endif %}
+  {% if erros %}
+  <div role="alert" class="mb-5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 px-4 py-3 text-sm">
+    <p class="font-medium">Não foi possível salvar:</p>
+    <ul class="list-disc ml-5 mt-1">{% for e in erros %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  {% block conteudo %}{% endblock %}
+
+  <footer class="text-xs text-slate-400 mt-10">Este link é pessoal e expira em alguns dias; não compartilhe. Para um link novo, mande <b>painel</b> para o assistente pelo seu número de avisos.</footer>
+</main>
+{% block scripts %}{% endblock %}
+</body>
+</html>

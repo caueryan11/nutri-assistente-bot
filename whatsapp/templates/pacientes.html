@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block titulo %}Pacientes{% endblock %}
+{% block conteudo %}
+<div class="flex items-center justify-between gap-3 mb-4">
+  <h1 class="text-2xl font-semibold">Pacientes</h1>
+  <a href="{{ base }}/pacientes/novo" class="rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-700">+ Novo paciente</a>
+</div>
+
+{% if pacientes %}
+<div class="bg-white rounded-xl border border-slate-200 overflow-x-auto">
+  <table class="w-full text-sm">
+    <thead class="text-left text-slate-500 border-b border-slate-200">
+      <tr><th class="px-4 py-2 font-normal">Paciente</th><th class="px-4 py-2 font-normal">Termo</th><th class="px-4 py-2 font-normal">Plano</th><th class="px-4 py-2 font-normal">Anamnese</th><th class="px-4 py-2 font-normal">Acompanhamento</th><th class="px-4 py-2 font-normal">Próxima consulta</th></tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+    {% for p in pacientes %}
+      <tr class="{{ 'text-slate-400' if not p.ativo else '' }}">
+        <td class="px-4 py-3"><a href="{{ base }}/pacientes/{{ p.id }}" class="font-medium text-emerald-700 hover:underline">{{ p.nome }}</a>
+          <div class="text-xs text-slate-500">{{ p.telefone }}{% if not p.ativo %} · inativo{% endif %}</div></td>
+        <td class="px-4 py-3 whitespace-nowrap">{{ status_termo[p.status_consentimento] }}</td>
+        <td class="px-4 py-3">{{ 'Rascunho p/ conferir' if p.tem_rascunho else ('Sim' if p.tem_plano else 'Falta') }}</td>
+        <td class="px-4 py-3">{{ 'Sim' if p.tem_anamnese else 'Falta' }}</td>
+        <td class="px-4 py-3 whitespace-nowrap">{% if p.acompanhamento_desde %}{{ ('até ' ~ p.acompanhamento_ate.strftime('%d/%m')) if p.acompanhamento_ate else 'Sim' }}{% if p.ultima_adesao is not none %} · adesão {{ p.ultima_adesao }}/10{% endif %}{% else %}—{% endif %}</td>
+        <td class="px-4 py-3 whitespace-nowrap">{{ data(p.proxima_consulta) if p.proxima_consulta else '—' }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="text-xs text-slate-500 mt-3">O assistente só conversa com quem aceitou o termo. Sem plano cadastrado, as dúvidas vão direto para você.</p>
+{% else %}
+<div class="bg-white rounded-xl border border-slate-200 p-8 text-center">
+  <p class="text-slate-600">Nenhum paciente cadastrado ainda.</p>
+  <a href="{{ base }}/pacientes/novo" class="inline-block mt-4 rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-medium">Cadastrar o primeiro paciente</a>
+</div>
+{% endif %}
+{% endblock %}

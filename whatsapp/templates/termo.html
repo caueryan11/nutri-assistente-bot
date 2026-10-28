@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Termo de Uso e Privacidade – Assistente da Nutricionista</title>
+  <style>
+    :root { --fundo: #f7f4ed; --texto: #17332d; --suave: #4a524e; --destaque: #b4532a; --caixa: #fffdf8; --borda: #e3dccb; }
+    @media (prefers-color-scheme: dark) {
+      :root { --fundo: #121f1c; --texto: #eef3f0; --suave: #c9ddd5; --destaque: #f0a37f; --caixa: #1a2b27; --borda: #2c4540; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--fundo); color: var(--texto); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+    h1 { font-size: 28px; line-height: 1.25; margin: 8px 0 4px; }
+    h2 { font-size: 20px; margin: 32px 0 8px; }
+    p, li { color: var(--suave); }
+    .rotulo { color: var(--destaque); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 13px; }
+    .aviso { background: var(--caixa); border: 1px solid var(--borda); border-radius: 12px; padding: 16px; margin: 20px 0; }
+    .comando { font-weight: 700; color: var(--texto); }
+    footer { margin-top: 40px; font-size: 14px; color: var(--suave); }
+  </style>
+</head>
+<body>
+<main>
+  <p class="rotulo">Assistente virtual da sua nutricionista</p>
+  <h1>Termo de Uso e Privacidade</h1>
+  <p>Versão {{ versao }}</p>
+
+  <div class="aviso">
+    <p><b>Versão preliminar, em revisão jurídica.</b> O texto pode mudar; se mudar, você será avisado e poderá aceitar de novo.</p>
+  </div>
+
+  <h2>1. O que é o assistente</h2>
+  <p>Um assistente virtual no WhatsApp do consultório da sua nutricionista. Ele tira dúvidas sobre o seu plano alimentar,
+    informa valores nutricionais pela Tabela Brasileira de Composição de Alimentos (TACO), marca e remarca consultas e envia
+    lembretes. <b>Ele não substitui a sua nutricionista</b>: não faz diagnóstico, não muda a sua dieta e encaminha para ela
+    tudo o que envolve sintomas, exames, medicamentos ou mudança no plano. Em emergência, ligue 192 (SAMU).</p>
+
+  <h2>2. Quem é responsável pelos seus dados</h2>
+  <p>A <b>controladora</b> dos seus dados é a nutricionista que atende você. O <b>Nutri Assistente</b>
+    ([razão social e CNPJ a preencher]) opera o sistema em nome dela, seguindo as instruções dela.</p>
+
+  <h2>3. Quais dados usamos e para quê</h2>
+  <ul>
+    <li><b>Contato:</b> nome e número de WhatsApp, para conversar com você e enviar lembretes.</li>
+    <li><b>Dados de saúde:</b> plano alimentar e anamnese (alergias, intolerâncias, restrições e preferências),
+      para responder dúvidas e nunca sugerir algo que não serve para você.</li>
+    <li><b>Mensagens:</b> o que você escreve ao assistente e as respostas, para entender a conversa e avisar a nutricionista quando preciso.</li>
+    <li><b>Consultas:</b> datas e horários marcados, para a agenda e os lembretes.</li>
+  </ul>
+  <p>A base legal é o seu <b>consentimento</b> (LGPD, art. 11, I). Seus dados não são vendidos nem usados para publicidade.</p>
+
+  <h2>4. Com quem os dados são compartilhados</h2>
+  <p>Só com os fornecedores necessários para o assistente funcionar: o serviço de inteligência artificial que interpreta as
+    mensagens (Anthropic), o banco de dados (Supabase, em São Paulo), o servidor da aplicação (Railway), o provedor de conexão
+    com o WhatsApp e o Google Agenda da nutricionista. <b>Parte desse processamento acontece fora do Brasil</b> (Estados Unidos),
+    com as salvaguardas previstas na LGPD.</p>
+
+  <h2>5. Por quanto tempo guardamos</h2>
+  <p>As mensagens são apagadas automaticamente depois de {{ retencao_dias }} dias. O cadastro, o plano e o histórico de
+    consultas ficam enquanto você for paciente, ou pelo prazo que a lei exigir da nutricionista.</p>
+
+  <h2>6. Seus direitos</h2>
+  <p>Você pode, a qualquer momento: confirmar se tratamos seus dados, acessá-los, corrigi-los, pedir a exclusão, pedir a
+    portabilidade e saber com quem foram compartilhados (LGPD, art. 18). Para isso, fale com a sua nutricionista.</p>
+
+  <h2>7. Como revogar o consentimento</h2>
+  <p>Responda <span class="comando">PARAR</span> no WhatsApp a qualquer momento. O assistente para de responder e de enviar
+    mensagens automáticas na hora. Você continua sendo atendido pela nutricionista normalmente. Se mudar de ideia, responda
+    <span class="comando">Aceito</span>.</p>
+
+  <h2>8. Contato</h2>
+  <p>Encarregado de dados (DPO): [nome e e-mail a preencher].</p>
+
+  <footer>Para aceitar, responda <b>Aceito</b> no WhatsApp.</footer>
+</main>
+</body>
+</html>

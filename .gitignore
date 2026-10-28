@@ -1,0 +1,25 @@
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Dados locais e saídas de teste
+dados/taco*.csv
+dados/taco.sql
+dados/taco.json
+*.log
+testes/resultados/
+*.bundle
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários do Office
+~$*

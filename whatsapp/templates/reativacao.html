@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block titulo %}Reativação de pacientes{% endblock %}
+{% block conteudo %}
+<h1 class="text-2xl font-semibold">Reativação de pacientes</h1>
+<p class="text-sm text-slate-600 mt-1 mb-5">Traga de volta quem está sem consulta: o assistente manda uma mensagem pessoal, oferece horários e marca o retorno na sua agenda.</p>
+
+<!-- 1. Importar a lista -->
+<section class="bg-white rounded-xl border border-slate-200 p-5">
+  <h2 class="font-medium">1. Importe sua lista de pacientes</h2>
+  <p class="text-xs text-slate-500 mt-1">Uma pessoa por linha: <b>nome; WhatsApp; data da última consulta</b>. Pode colar direto do Excel ou da planilha do seu software. A data ajuda a escolher quem chamar.</p>
+  <form method="post" action="{{ base }}/reativacao/importar" class="mt-3">
+    <textarea name="lista" rows="7" spellcheck="false" class="w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm" placeholder="Maria Silva; (51) 99999-0000; 15/03/2026&#10;João Pereira; 51 98888-1111; 02/2026&#10;Ana Costa; 11999990002">{{ lista or '' }}</textarea>
+    <div class="flex flex-wrap gap-2 mt-2">
+      <button name="acao" value="conferir" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">Conferir</button>
+      <button name="acao" value="importar" class="rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-700">Importar</button>
+    </div>
+  </form>
+  {% if conferencia %}
+  <div class="mt-3 text-sm">
+    <p><b>{{ conferencia.validos|length }}</b> paciente(s) prontos para importar{% if conferencia.erros %}; <b>{{ conferencia.erros|length }}</b> linha(s) com problema:{% else %}.{% endif %}</p>
+    {% if conferencia.erros %}<ul class="list-disc ml-5 text-amber-800 mt-1">{% for e in conferencia.erros[:15] %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+  {% endif %}
+</section>
+
+<!-- 2. Campanha -->
+<section class="bg-white rounded-xl border border-slate-200 p-5 mt-4">
+  <h2 class="font-medium">2. Crie a campanha</h2>
+  <form method="post" action="{{ base }}/reativacao/campanha" class="mt-3 space-y-3">
+    <div class="flex flex-wrap items-center gap-2 text-sm">
+      <label for="dias">Chamar quem está sem consulta há mais de</label>
+      <select id="dias" name="dias" class="rounded-lg border border-slate-300 px-3 py-1.5">
+        {% for d in [45, 60, 90, 180, 365] %}<option value="{{ d }}" {{ 'selected' if d == form.dias }}>{{ d }} dias</option>{% endfor %}
+      </select>
+    </div>
+    <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="sem_data" value="1" {{ 'checked' if form.sem_data }} class="rounded"> Incluir quem não tem data de última consulta</label>
+    <div>
+      <label for="mensagem" class="block text-sm font-medium">Mensagem</label>
+      <textarea id="mensagem" name="mensagem" rows="4" maxlength="700" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">{{ form.mensagem }}</textarea>
+      <p class="text-xs text-slate-500 mt-1">{nome} vira o primeiro nome do paciente e {nutri} o seu nome. A opção de responder PARAR é incluída sempre.</p>
+    </div>
+    {% if publico is not none %}
+    <div class="rounded-lg bg-slate-50 border border-slate-200 p-3 text-sm">
+      <p><b>{{ publico.total }}</b> paciente(s) vão receber{% if publico.exemplos %} (ex.: {{ publico.exemplos|join(', ') }}){% endif %}.</p>
+      <p class="text-slate-600 mt-1">Ficam de fora: quem já tem consulta marcada, quem pediu para PARAR e quem recebeu campanha nos últimos 90 dias.</p>
+      <p class="text-slate-600 mt-1">Envio gradual, seg a sáb das 9h às 20h: cerca de 180 mensagens por hora{% if publico.total > 180 %} (esta campanha leva ~{{ (publico.total / 180)|round(0, 'ceil')|int }} h de envio){% endif %}.</p>
+      <p class="mt-2 font-medium">Prévia:</p>
+      <p class="whitespace-pre-line bg-white rounded border border-slate-200 p-2 mt-1">{{ previa }}</p>
+    </div>
+    <label class="flex items-start gap-2 text-sm"><input type="checkbox" name="confirmo" value="1" class="rounded mt-1"> <span>Confirmo que são meus pacientes e que posso contatá-los para agendar retorno.</span></label>
+    {% endif %}
+    <div class="flex flex-wrap gap-2">
+      <button name="acao" value="conferir" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">Ver quem vai receber</button>
+      {% if publico and publico.total %}<button name="acao" value="enviar" class="rounded-lg bg-emerald-600 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-700">Enviar para {{ publico.total }} paciente(s)</button>{% endif %}
+    </div>
+  </form>
+</section>
+
+<!-- 3. Resultados -->
+<section class="bg-white rounded-xl border border-slate-200 p-5 mt-4">
+  <h2 class="font-medium">3. Resultados</h2>
+  {% if campanhas %}
+  <div class="overflow-x-auto mt-3">
+    <table class="w-full text-sm">
+      <thead class="text-left text-slate-500 border-b border-slate-200">
+        <tr><th class="py-1 pr-3 font-normal">Campanha</th><th class="py-1 pr-3 font-normal">Enviadas</th><th class="py-1 pr-3 font-normal">Responderam</th><th class="py-1 pr-3 font-normal">Agendaram</th><th class="py-1 pr-3 font-normal">Receita estimada</th><th class="py-1 font-normal"></th></tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+      {% for c in campanhas %}
+        <tr>
+          <td class="py-2 pr-3 whitespace-nowrap">{{ data(c.criada_em) }}<div class="text-xs text-slate-500">{{ {'enviando': 'enviando', 'pausada': 'pausada', 'concluida': 'concluída'}[c.status] }}{% if c.pendentes %} · {{ c.pendentes }} na fila{% endif %}</div></td>
+          <td class="py-2 pr-3">{{ c.enviados }} de {{ c.total }}</td>
+          <td class="py-2 pr-3">{{ c.responderam }}</td>
+          <td class="py-2 pr-3 font-medium">{{ c.agendaram }}</td>
+          <td class="py-2 pr-3 whitespace-nowrap">{{ ('R$ ' ~ reais(c.agendaram * valor_consulta)) if valor_consulta else 'cadastre o valor da consulta' }}</td>
+          <td class="py-2">
+            {% if c.status in ('enviando', 'pausada') %}
+            <form method="post" action="{{ base }}/reativacao/campanha/{{ c.id }}/{{ 'pausar' if c.status == 'enviando' else 'retomar' }}">
+              <button class="text-sm text-slate-600 hover:text-slate-900 underline">{{ 'Pausar' if c.status == 'enviando' else 'Retomar' }}</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="text-xs text-slate-500 mt-2">"Agendaram" conta consultas marcadas até 30 dias depois da mensagem.</p>
+  {% else %}
+  <p class="text-sm text-slate-500 mt-2">Nenhuma campanha ainda.</p>
+  {% endif %}
+</section>
+{% endblock %}

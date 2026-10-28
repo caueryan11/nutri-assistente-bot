@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block titulo %}Consultório{% endblock %}
+{% block conteudo %}
+<h1 class="text-2xl font-semibold mb-4">Consultório</h1>
+<form method="post" class="space-y-4">
+  <div class="grid lg:grid-cols-2 gap-4">
+    <section class="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+      <h2 class="font-medium">Atendimento e valores</h2>
+      <p class="text-xs text-slate-500">O assistente usa estes dados para responder quem ainda não é paciente.</p>
+      <div>
+        <label for="valor_consulta" class="block text-sm font-medium">Valor da consulta (R$)</label>
+        <input id="valor_consulta" name="valor_consulta" inputmode="decimal" placeholder="250,00" value="{{ f.valor_consulta }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+      </div>
+      <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="atende_convenio" value="1" {{ 'checked' if f.atende_convenio }} class="rounded"> Atendo por convênio</label>
+      <div>
+        <label for="convenios_aceitos" class="block text-sm font-medium">Convênios aceitos</label>
+        <input id="convenios_aceitos" name="convenios_aceitos" placeholder="ex.: Unimed, Bradesco Saúde" value="{{ f.convenios_aceitos }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+      </div>
+      <div>
+        <label for="politica_reembolso" class="block text-sm font-medium">Reembolso</label>
+        <textarea id="politica_reembolso" name="politica_reembolso" rows="2" maxlength="600" placeholder="ex.: Emito recibo com CRN para você pedir reembolso ao seu plano." class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">{{ f.politica_reembolso }}</textarea>
+      </div>
+      <div>
+        <label for="apresentacao_servico" class="block text-sm font-medium">Como é a consulta</label>
+        <textarea id="apresentacao_servico" name="apresentacao_servico" rows="3" maxlength="1000" placeholder="ex.: Consulta de 1 hora com avaliação completa, plano individual e acompanhamento pelo WhatsApp." class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">{{ f.apresentacao_servico }}</textarea>
+      </div>
+      <div>
+        <label for="telefone_aviso" class="block text-sm font-medium">Seu WhatsApp para avisos</label>
+        <input id="telefone_aviso" name="telefone_aviso" inputmode="tel" value="{{ f.telefone_aviso }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+        <p class="text-xs text-slate-500 mt-1">Recebe encaminhamentos, resumo das 8h e relatório semanal.</p>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-xl border border-slate-200 p-5 space-y-4">
+      <h2 class="font-medium">Agenda</h2>
+      {% if not google_conectado %}<p class="text-xs text-amber-700">Seu Google Agenda ainda não está conectado: o assistente não marca consultas. Fale com o suporte.</p>{% endif %}
+      <p class="text-xs text-slate-500">Horários em que o assistente pode marcar consultas. Vazio = não atende no dia. Ex.: 08:00-12:00, 14:00-18:00</p>
+      {% for d, nome in dias %}
+      <div class="grid grid-cols-[4rem_1fr] items-center gap-2">
+        <label for="dia_{{ d }}" class="text-sm">{{ nome }}</label>
+        <input id="dia_{{ d }}" name="dia_{{ d }}" value="{{ f['dia_' ~ d] }}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
+      </div>
+      {% endfor %}
+      <div class="border-t border-slate-100 pt-4">
+        <h3 class="text-sm font-medium">Níveis de consulta</h3>
+        <label class="flex items-start gap-2 text-sm mt-2"><input type="radio" name="modelo_acompanhamento" value="todos" {{ 'checked' if f.modelo_acompanhamento != 'por_paciente' }} class="mt-1"> <span><b>Todos os pacientes</b> tiram dúvidas 24h com o assistente.</span></label>
+        <label class="flex items-start gap-2 text-sm mt-1"><input type="radio" name="modelo_acompanhamento" value="por_paciente" {{ 'checked' if f.modelo_acompanhamento == 'por_paciente' }} class="mt-1"> <span><b>Dois níveis:</b> consulta simples (agenda e lembretes) e consulta com acompanhamento (dúvidas 24h, check-in semanal e alertas).</span></label>
+        <div class="flex items-center gap-2 mt-2">
+          <label for="acompanhamento_dias" class="text-sm">Acompanhamento vale por</label>
+          <input id="acompanhamento_dias" name="acompanhamento_dias" inputmode="numeric" value="{{ f.acompanhamento_dias }}" class="w-16 rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+          <span class="text-sm">dias depois da consulta</span>
+        </div>
+        <p class="text-xs text-slate-500 mt-1">Alguns dias antes de vencer, o assistente convida o paciente a marcar o retorno.</p>
+      </div>
+      <div class="border-t border-slate-100 pt-4">
+        <h3 class="text-sm font-medium">Check-in semanal do acompanhamento</h3>
+        <p class="text-xs text-slate-500 mt-1">Quando os pacientes no acompanhamento recebem as perguntas da semana.</p>
+        <div class="flex flex-wrap gap-2 mt-2">
+          <select name="checkin_dia" aria-label="Dia do check-in" class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
+            {% for d, nome in dias_semana %}<option value="{{ d }}" {{ 'selected' if d == f.checkin_dia|int }}>{{ nome }}</option>{% endfor %}
+          </select>
+          <input name="checkin_hora" aria-label="Hora do check-in" type="time" max="20:59" value="{{ f.checkin_hora }}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div><label for="duracao_min" class="block text-xs font-medium">Duração (min)</label>
+          <input id="duracao_min" name="duracao_min" inputmode="numeric" value="{{ f.duracao_min }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm"></div>
+        <div><label for="antecedencia_horas" class="block text-xs font-medium">Antecedência (h)</label>
+          <input id="antecedencia_horas" name="antecedencia_horas" inputmode="numeric" value="{{ f.antecedencia_horas }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm"></div>
+        <div><label for="janela_dias" class="block text-xs font-medium">Até (dias)</label>
+          <input id="janela_dias" name="janela_dias" inputmode="numeric" value="{{ f.janela_dias }}" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm"></div>
+      </div>
+    </section>
+  </div>
+  <button class="rounded-lg bg-emerald-600 text-white px-5 py-2 text-sm font-medium hover:bg-emerald-700">Salvar</button>
+</form>
+{% endblock %}

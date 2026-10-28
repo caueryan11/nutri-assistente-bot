@@ -1,0 +1,5 @@
+# Quebra de linha LF em tudo (scripts .sh rodam em Linux/Git Bash)
+* text=auto eol=lf
+*.bat text eol=crlf
+*.pdf binary
+*.png binary

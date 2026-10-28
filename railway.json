@@ -1,0 +1,15 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK"
+  },
+  "deploy": {
+    "startCommand": "uvicorn whatsapp.app:criar_app_do_ambiente --factory --host 0.0.0.0 --port ${PORT:-8000} --no-access-log",
+    "healthcheckPath": "/saude",
+    "healthcheckTimeout": 60,
+    "restartPolicyType": "ON_FAILURE",
+    "multiRegionConfig": {
+      "us-east4-eqdc4a": { "numReplicas": 1 }
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "_aviso": "Plano FICTÍCIO só para testes. O formato real depende de como a nutri piloto entrega a dieta (decisão da Ray).",
+  "paciente": "Maria Silva",
+  "nutricionista": "Ana Souza",
+  "vigente_desde": "2026-09-01",
+  "refeicoes": [
+    {
+      "nome": "Café da manhã",
+      "horario": "07:00",
+      "itens": [
+        {
+          "alimento": "Pão francês",
+          "quantidade": "1 unidade (50 g)",
+          "substituicoes": [
+            "2 fatias de pão de forma integral (50 g)",
+            "3 colheres de sopa de tapioca (45 g)"
+          ]
+        },
+        {
+          "alimento": "Ovo de galinha cozido",
+          "quantidade": "1 unidade (50 g)",
+          "substituicoes": [
+            "1 fatia média de queijo minas frescal (30 g)"
+          ]
+        },
+        {
+          "alimento": "Mamão papaia",
+          "quantidade": "1/2 unidade (150 g)",
+          "substituicoes": [
+            "1 banana prata (70 g)",
+            "1 fatia média de melão (150 g)"
+          ]
+        },
+        {
+          "alimento": "Café sem açúcar",
+          "quantidade": "à vontade",
+          "substituicoes": []
+        }
+      ]
+    },
+    {
+      "nome": "Lanche da manhã",
+      "horario": "10:00",
+      "itens": [
+        {
+          "alimento": "Iogurte natural",
+          "quantidade": "1 pote (170 g)",
+          "substituicoes": [
+            "1 copo de leite desnatado (200 ml)"
+          ]
+        }
+      ]
+    },
+    {
+      "nome": "Almoço",
+      "horario": "12:30",
+      "itens": [
+        {
+          "alimento": "Arroz integral cozido",
+          "quantidade": "4 colheres de sopa (100 g)",
+          "substituicoes": [
+            "1 batata-doce média cozida (130 g)",
+            "4 colheres de sopa de arroz branco cozido (100 g)"
+          ]
+        },
+        {
+          "alimento": "Feijão carioca cozido",
+          "quantidade": "1 concha média (80 g)",
+          "substituicoes": [
+            "1 concha média de lentilha cozida (80 g)"
+          ]
+        },
+        {
+          "alimento": "Peito de frango grelhado",
+          "quantidade": "1 filé médio (100 g)",
+          "substituicoes": [
+            "1 filé médio de tilápia grelhada (120 g)",
+            "1 bife médio de patinho grelhado (90 g)"
+          ]
+        },
+        {
+          "alimento": "Salada de folhas",
+          "quantidade": "à vontade",
+          "substituicoes": []
+        },
+        {
+          "alimento": "Azeite de oliva",
+          "quantidade": "1 colher de chá (5 ml)",
+          "substituicoes": []
+        }
+      ]
+    },
+    {
+      "nome": "Lanche da tarde",
+      "horario": "16:00",
+      "itens": [
+        {
+          "alimento": "Banana prata",
+          "quantidade": "1 unidade (70 g)",
+          "substituicoes": [
+            "1 maçã média (130 g)"
+          ]
+        },
+        {
+          "alimento": "Aveia em flocos",
+          "quantidade": "1 colher de sopa (15 g)",
+          "substituicoes": []
+        }
+      ]
+    },
+    {
+      "nome": "Jantar",
+      "horario": "19:30",
+      "itens": [
+        {
+          "alimento": "Ovo de galinha inteiro cozido",
+          "quantidade": "2 unidades (100 g)",
+          "substituicoes": [
+            "1 filé médio de peito de frango grelhado (100 g)",
+            "1 fatia média de queijo minas frescal (30 g) + 1 ovo cozido (50 g)"
+          ]
+        },
+        {
+          "alimento": "Salada de legumes cozida no vapor",
+          "quantidade": "1 prato de sobremesa (150 g)",
+          "substituicoes": [
+            "Abobrinha refogada (150 g)"
+          ]
+        },
+        {
+          "alimento": "Arroz integral cozido",
+          "quantidade": "2 colheres de sopa (50 g)",
+          "substituicoes": [
+            "1/2 batata-doce média cozida (65 g)"
+          ]
+        }
+      ]
+    }
+  ],
+  "observacoes_gerais": [
+    "Beber pelo menos 2 litros de água por dia.",
+    "Evitar refrigerante e suco industrializado."
+  ]
+}
